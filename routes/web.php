@@ -6,4 +6,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// test github 1
+// ijan gampang
