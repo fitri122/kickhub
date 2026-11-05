@@ -6,7 +6,7 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ url('/') }}">
-                        <img src="{{ asset('images/Logo.png') }}" alt="Logo" class="block h-9 w-auto">
+                        <img src="{{ asset('images/Logo.png') }}" alt="Logo" class="block h-11 w-auto">
                     </a>
                 </div>
 
@@ -14,6 +14,15 @@
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="url('/')" :active="request()->is('/') || request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('schedule')" :active="request()->routeIs('schedule')">
+                        {{ __('Schedule') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('league-table')" :active="request()->routeIs('league-table')">
+                        {{ __('League Table') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('statistics')" :active="request()->routeIs('statistics')">
+                        {{ __('Statistics') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -80,8 +89,17 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-        <x-responsive-nav-link :href="url('/')" :active="request()->is('/') || request()->routeIs('dashboard')">
+            <x-responsive-nav-link :href="url('/')" :active="request()->is('/') || request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('schedule')" :active="request()->routeIs('schedule')">
+                {{ __('Schedule') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('league-table')" :active="request()->routeIs('league-table')">
+                {{ __('League Table') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('statistics')" :active="request()->routeIs('statistics')">
+                {{ __('Statistics') }}
             </x-responsive-nav-link>
         </div>
 
