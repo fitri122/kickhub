@@ -6,7 +6,7 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ url('/') }}">
-                        <img src="{{ asset('images/Logo.png') }}" alt="Logo" class="block h-11 w-auto">
+                        <img src="{{ asset('images/Logo.png') }}" alt="Logo" class="block h-5 w-auto">
                     </a>
                 </div>
 
