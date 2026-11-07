@@ -28,7 +28,7 @@
                 </div>
             </div>
 
-            @unless (request()->routeIs('login', 'password.request', 'register'))
+            @unless (request()->routeIs('login', 'password.request'))
                 <x-site-footer />
             @endunless
         </div>

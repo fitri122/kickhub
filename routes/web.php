@@ -11,6 +11,14 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::view('/team-manager', 'dashboards.team-manager')
+    ->middleware(['auth', 'verified', 'role:team_manager'])
+    ->name('team-manager.dashboard');
+
+Route::view('/technical-official', 'dashboards.technical-official')
+    ->middleware(['auth', 'verified', 'role:technical_official'])
+    ->name('technical-official.dashboard');
+
 Route::view('/schedule', 'schedule')->name('schedule');
 Route::view('/league-table', 'league-table')->name('league-table');
 Route::view('/statistics', 'statistics')->name('statistics');

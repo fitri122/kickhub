@@ -30,6 +30,51 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 
+    public function test_login_redirects_each_role_to_its_dashboard(): void
+    {
+        $manager = User::factory()->create(['role' => User::ROLE_TEAM_MANAGER]);
+        $this->post('/login', ['email' => $manager->email, 'password' => 'password'])
+            ->assertRedirect(route('team-manager.dashboard', absolute: false));
+
+        $this->post('/logout');
+
+        $official = User::factory()->create(['role' => User::ROLE_TECHNICAL_OFFICIAL]);
+        $this->post('/login', ['email' => $official->email, 'password' => 'password'])
+            ->assertRedirect(route('technical-official.dashboard', absolute: false));
+    }
+
+    public function test_role_dashboards_are_only_accessible_to_the_assigned_role(): void
+    {
+        $manager = User::factory()->create(['role' => User::ROLE_TEAM_MANAGER]);
+        $official = User::factory()->create(['role' => User::ROLE_TECHNICAL_OFFICIAL]);
+        $regularUser = User::factory()->create();
+
+        $this->actingAs($manager)->get(route('team-manager.dashboard'))->assertOk();
+        $this->actingAs($manager)->get(route('technical-official.dashboard'))->assertForbidden();
+        $this->actingAs($official)->get(route('technical-official.dashboard'))->assertOk();
+        $this->actingAs($official)->get(route('team-manager.dashboard'))->assertForbidden();
+        $this->actingAs($regularUser)->get(route('team-manager.dashboard'))->assertForbidden();
+        $this->actingAs($regularUser)->get(route('technical-official.dashboard'))->assertForbidden();
+    }
+
+    public function test_role_navigation_links_are_shown_only_for_the_matching_role(): void
+    {
+        $manager = User::factory()->create(['role' => User::ROLE_TEAM_MANAGER]);
+        $this->actingAs($manager)->get('/')
+            ->assertSee('Team Manager')
+            ->assertDontSee('Technical Official');
+
+        $official = User::factory()->create(['role' => User::ROLE_TECHNICAL_OFFICIAL]);
+        $this->actingAs($official)->get('/')
+            ->assertSee('Technical Official')
+            ->assertDontSee('Team Manager');
+
+        $regularUser = User::factory()->create();
+        $this->actingAs($regularUser)->get('/')
+            ->assertDontSee('Team Manager')
+            ->assertDontSee('Technical Official');
+    }
+
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
         $user = User::factory()->create();

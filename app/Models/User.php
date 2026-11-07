@@ -15,6 +15,12 @@ use Illuminate\Notifications\Notifiable;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
+    public const ROLE_REGULAR_USER = 'regular_user';
+
+    public const ROLE_TEAM_MANAGER = 'team_manager';
+
+    public const ROLE_TECHNICAL_OFFICIAL = 'technical_official';
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
@@ -29,6 +35,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function dashboardRoute(): string
+    {
+        return match ($this->role) {
+            self::ROLE_TEAM_MANAGER => 'team-manager.dashboard',
+            self::ROLE_TECHNICAL_OFFICIAL => 'technical-official.dashboard',
+            default => 'dashboard',
+        };
     }
 
     // Seorang pengurus boleh mengurus banyak pasukan

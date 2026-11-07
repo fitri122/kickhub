@@ -24,6 +24,17 @@
                     <x-nav-link :href="route('statistics')" :active="request()->routeIs('statistics')">
                         {{ __('Statistics') }}
                     </x-nav-link>
+                    @auth
+                        @if (Auth::user()->role === \App\Models\User::ROLE_TEAM_MANAGER)
+                            <x-nav-link :href="route('team-manager.dashboard')" :active="request()->routeIs('team-manager.dashboard')">
+                                {{ __('Team Manager') }}
+                            </x-nav-link>
+                        @elseif (Auth::user()->role === \App\Models\User::ROLE_TECHNICAL_OFFICIAL)
+                            <x-nav-link :href="route('technical-official.dashboard')" :active="request()->routeIs('technical-official.dashboard')">
+                                {{ __('Technical Official') }}
+                            </x-nav-link>
+                        @endif
+                    @endauth
                 </div>
             </div>
 
@@ -65,11 +76,6 @@
                         <a href="{{ route('login') }}" class="text-sm text-gray-700 underline hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                             {{ __('Log in') }}
                         </a>
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                {{ __('Register') }}
-                            </a>
-                        @endif
                     </div>
                 @endauth
             </div>
@@ -101,6 +107,17 @@
             <x-responsive-nav-link :href="route('statistics')" :active="request()->routeIs('statistics')">
                 {{ __('Statistics') }}
             </x-responsive-nav-link>
+            @auth
+                @if (Auth::user()->role === \App\Models\User::ROLE_TEAM_MANAGER)
+                    <x-responsive-nav-link :href="route('team-manager.dashboard')" :active="request()->routeIs('team-manager.dashboard')">
+                        {{ __('Team Manager') }}
+                    </x-responsive-nav-link>
+                @elseif (Auth::user()->role === \App\Models\User::ROLE_TECHNICAL_OFFICIAL)
+                    <x-responsive-nav-link :href="route('technical-official.dashboard')" :active="request()->routeIs('technical-official.dashboard')">
+                        {{ __('Technical Official') }}
+                    </x-responsive-nav-link>
+                @endif
+            @endauth
         </div>
 
         <!-- Responsive Settings Options -->
@@ -134,11 +151,6 @@
                     <x-responsive-nav-link :href="route('login')">
                         {{ __('Log in') }}
                     </x-responsive-nav-link>
-                    @if (Route::has('register'))
-                        <x-responsive-nav-link :href="route('register')">
-                            {{ __('Register') }}
-                        </x-responsive-nav-link>
-                    @endif
                 </div>
             </div>
         @endauth
