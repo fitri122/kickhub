@@ -11,6 +11,11 @@ class Kumpulan extends Model
 {
     protected $table = 'kumpulan';
 
+    public function pasukan(): HasMany
+    {
+        return $this->hasMany(Pasukan::class, 'id_kumpulan');
+    }
+
     // Satu kumpulan mengandungi banyak perlawanan
     public function perlawanan(): HasMany
     {

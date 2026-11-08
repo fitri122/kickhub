@@ -7,10 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['nama_pasukan', 'nama_kolej', 'id_pengurus'])]
+#[Fillable(['nama_pasukan', 'nama_kolej', 'id_pengurus', 'id_kumpulan', 'logo'])]
 class Pasukan extends Model
 {
     protected $table = 'pasukan';
+
+    public function kumpulan(): BelongsTo
+    {
+        return $this->belongsTo(Kumpulan::class, 'id_kumpulan');
+    }
 
     // Pengurus yang mengendalikan pasukan ini
     public function pengurus(): BelongsTo

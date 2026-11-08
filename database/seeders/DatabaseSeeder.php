@@ -37,5 +37,7 @@ class DatabaseSeeder extends Seeder
                 'role' => User::ROLE_TECHNICAL_OFFICIAL,
             ],
         );
+
+        $this->call(TeamSeeder::class);
     }
 }

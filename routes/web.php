@@ -1,15 +1,30 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Models\Pasukan;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('dashboard');
+    return view('dashboard', [
+        'teams' => Pasukan::query()->orderBy('nama_pasukan')->get(),
+    ]);
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return view('dashboard', [
+        'teams' => Pasukan::query()->orderBy('nama_pasukan')->get(),
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/teams/{pasukan}', function (Pasukan $pasukan) {
+    return view('teams.show', [
+        'team' => $pasukan,
+        'players' => $pasukan->pemain()
+            ->withCount('sekatan')
+            ->orderBy('nama')
+            ->paginate(15),
+    ]);
+})->name('teams.show');
 
 Route::view('/team-manager', 'dashboards.team-manager')
     ->middleware(['auth', 'verified', 'role:team_manager'])
