@@ -8,13 +8,13 @@
             <div class="grid items-center lg:grid-cols-2">
                 <div class="px-6 py-10 sm:px-10 lg:px-12 lg:py-14">
                     <p class="mb-3 text-sm font-bold uppercase tracking-[0.2em] text-amber-300">
-                        {{ __('KickHub Football Tournament') }}
+                        {{ __('KickHub : Sistem Pengurusan Kejohanan Bola Sepak SuKoV Melaka & Negeri Sembilan') }}
                     </p>
                     <h1 class="max-w-xl text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
                         {{ __('Every team. One tournament.') }}
                     </h1>
                     <p class="mt-5 max-w-lg text-base leading-7 text-blue-100 sm:text-lg">
-                        {{ __('Follow the action, explore the teams, and keep up with every fixture in the KickHub football tournament system.') }}
+                        {{ __('Kolej Vokasional Kuala Klawang is the team that has secured three consecutive victories in 2024, 2025 and 2026. Will they make history by achieving their fourth consecutive victory next year in 2027?. See you in SuKoV Bola Sepak Melan 2027') }}
                     </p>
                     <a
                         href="{{ route('schedule') }}"
@@ -30,23 +30,23 @@
                         <img
                             x-show="activeSlide === 0"
                             x-transition.opacity
-                            src="{{ asset('images/kickhub-banner-match.svg') }}"
-                            alt="{{ __('Football match on a tournament field') }}"
+                            src="{{ asset('images/banner1.jpeg') }}"
+                            alt="{{ __('SuKoV football tournament banner') }}"
                             class="h-full w-full object-cover"
                         >
                         <img
                             x-show="activeSlide === 1"
                             x-transition.opacity
-                            src="{{ asset('images/kickhub-banner-tournament.svg') }}"
-                            alt="{{ __('KickHub tournament stadium') }}"
+                            src="{{ asset('images/banner2.jpeg') }}"
+                            alt="{{ __('SuKoV football tournament banner') }}"
                             class="h-full w-full object-cover"
                             style="display: none"
                         >
                         <img
                             x-show="activeSlide === 2"
                             x-transition.opacity
-                            src="{{ asset('images/kickhub-banner-team.svg') }}"
-                            alt="{{ __('Football teams ready for the tournament') }}"
+                            src="{{ asset('images/banner3.jpeg') }}"
+                            alt="{{ __('SuKoV football tournament banner') }}"
                             class="h-full w-full object-cover"
                             style="display: none"
                         >
