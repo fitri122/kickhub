@@ -38,6 +38,17 @@ class TeamSeeder extends Seeder
             ],
         ];
 
+        $teamLogos = [
+            'KV Datuk Seri Abu Zahar Isnin' => 'images/kvdsazi.jpg',
+            'KV Kuala Klawang' => null,
+            'KV Port Dickson' => null,
+            'KV Melaka Tengah' => null,
+            'KV Ampangan' => null,
+            'KV Datuk Seri Mohd Zain' => null,
+            'KV Datuk Lela Maharaja' => null,
+            'KV Juaseh' => null,
+        ];
+
         foreach ($teams as $groupName => $teamsInGroup) {
             foreach ($teamsInGroup as $teamName => $state) {
                 Pasukan::updateOrCreate(
@@ -46,7 +57,7 @@ class TeamSeeder extends Seeder
                         'nama_kolej' => $state,
                         'id_pengurus' => $manager->id,
                         'id_kumpulan' => $groups[$groupName]->id,
-                        'logo' => 'images/kvdsazi.jpg',
+                        'logo' => $teamLogos[$teamName] ?? null,
                     ],
                 );
             }

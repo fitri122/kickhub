@@ -90,10 +90,10 @@
                 <div>
                     <p class="text-sm font-bold uppercase tracking-widest text-blue-800">{{ __('Meet the contenders') }}</p>
                     <h2 id="teams-heading" class="mt-1 text-2xl font-extrabold text-gray-900 sm:text-3xl">
-                        {{ __('Tournament Teams') }}
+                        {{ __('SuKoV Teams') }}
                     </h2>
                 </div>
-                <p class="text-sm text-gray-600">
+                <p class="text-sm text-gray-600">   
                     {{ trans_choice(':count registered team|:count registered teams', $teams->count(), ['count' => $teams->count()]) }}
                 </p>
             </div>
@@ -103,12 +103,14 @@
                     @foreach ($teams as $team)
                         <article data-team-card="{{ $team->id }}" class="flex h-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                             <div class="flex h-48 items-center justify-center bg-gray-50 p-5">
-                                <img
-                                    src="{{ $team->logo ? (str_starts_with($team->logo, 'http') || str_starts_with($team->logo, 'images/') ? asset($team->logo) : asset('storage/'.$team->logo)) : asset('images/team-placeholder.svg') }}"
-                                    alt="{{ __(':team logo', ['team' => $team->nama_pasukan]) }}"
-                                    class="h-full w-full object-contain"
-                                    loading="lazy"
-                                >
+                                @if ($team->logo)
+                                    <img
+                                        src="{{ str_starts_with($team->logo, 'http') || str_starts_with($team->logo, 'images/') ? asset($team->logo) : asset('storage/'.$team->logo) }}"
+                                        alt="{{ __(':team logo', ['team' => $team->nama_pasukan]) }}"
+                                        class="h-full w-full object-contain"
+                                        loading="lazy"
+                                    >
+                                @endif
                             </div>
                             <div class="flex flex-1 flex-col p-5">
                                 <h3 class="min-h-14 break-words text-base font-bold leading-7 text-gray-900">{{ $team->nama_pasukan }}</h3>

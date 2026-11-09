@@ -72,12 +72,15 @@ class DashboardTest extends TestCase
         ]);
         $this->seed(TeamSeeder::class);
 
-        $this->get('/')
+        $response = $this->get('/')
             ->assertOk()
             ->assertSee('KV Datuk Seri Abu Zahar Isnin')
             ->assertSee('KV Kuala Klawang')
             ->assertSee('Melaka')
             ->assertSee('Negeri Sembilan');
+
+        $this->assertSame(1, substr_count($response->getContent(), asset('images/kvdsazi.jpg')));
+        $response->assertDontSee(asset('images/team-placeholder.svg'));
 
         $this->assertSame(3, Pasukan::query()->where('nama_kolej', 'Melaka')->count());
         $this->assertSame(5, Pasukan::query()->where('nama_kolej', 'Negeri Sembilan')->count());
@@ -107,20 +110,23 @@ class DashboardTest extends TestCase
             Pasukan::query()->whereHas('kumpulan', fn ($query) => $query->where('nama_kumpulan', 'Kumpulan B'))->count(),
         );
         $this->assertSame(
-            8,
+            1,
             Pasukan::query()->where('logo', 'images/kvdsazi.jpg')->count(),
         );
+        $this->assertSame(7, Pasukan::query()->whereNull('logo')->count());
         $this->assertDatabaseHas('pasukan', [
             'nama_pasukan' => 'KV Datuk Seri Abu Zahar Isnin',
             'nama_kolej' => 'Melaka',
+            'logo' => 'images/kvdsazi.jpg',
         ]);
         $this->assertDatabaseHas('pasukan', [
             'nama_pasukan' => 'KV Kuala Klawang',
             'nama_kolej' => 'Negeri Sembilan',
+            'logo' => null,
         ]);
     }
 
-    public function test_team_view_page_shows_its_players_and_placeholder_logo(): void
+    public function test_team_view_page_shows_its_players_without_a_logo_placeholder(): void
     {
         $team = Pasukan::create([
             'nama_pasukan' => 'KickHub United',
@@ -147,7 +153,8 @@ class DashboardTest extends TestCase
             ->assertSee('players-tab', false)
             ->assertSee('coaches-tab', false)
             ->assertSee('disabled')
-            ->assertSee(asset('images/team-placeholder.svg'));
+            ->assertDontSee('<img', false)
+            ->assertDontSee(asset('images/team-placeholder.svg'));
     }
 
     public function test_player_status_is_blacklist_when_a_sekatan_record_exists(): void

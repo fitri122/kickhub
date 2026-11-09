@@ -6,14 +6,16 @@
 
         <section class="mt-5 flex flex-col items-center gap-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:flex-row sm:p-8">
             <div class="flex h-36 w-36 shrink-0 items-center justify-center rounded-xl bg-gray-50 p-4 sm:h-40 sm:w-40">
-                <img
-                    src="{{ $team->logo ? (str_starts_with($team->logo, 'http') || str_starts_with($team->logo, 'images/') ? asset($team->logo) : asset('storage/'.$team->logo)) : asset('images/team-placeholder.svg') }}"
-                    alt="{{ __(':team logo', ['team' => $team->nama_pasukan]) }}"
-                    class="h-full w-full object-contain"
-                >
+                @if ($team->logo)
+                    <img
+                        src="{{ str_starts_with($team->logo, 'http') || str_starts_with($team->logo, 'images/') ? asset($team->logo) : asset('storage/'.$team->logo) }}"
+                        alt="{{ __(':team logo', ['team' => $team->nama_pasukan]) }}"
+                        class="h-full w-full object-contain"
+                    >
+                @endif
             </div>
             <div class="min-w-0 flex-1 text-center sm:text-left">
-                <p class="text-sm font-bold uppercase tracking-widest text-blue-800">{{ __('Tournament Team') }}</p>
+                <p class="text-sm font-bold uppercase tracking-widest text-blue-800">{{ __('SuKoV    Team') }}</p>
                 <h1 class="mt-2 break-words text-2xl font-extrabold leading-tight text-gray-900 sm:text-3xl">{{ $team->nama_pasukan }}</h1>
                 <p class="mt-3 text-gray-600">{{ $team->nama_kolej }}</p>
             </div>
