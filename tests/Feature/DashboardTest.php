@@ -152,8 +152,18 @@ class DashboardTest extends TestCase
             ->assertDontSee('Player From Another Team')
             ->assertSee('players-tab', false)
             ->assertSee('coaches-tab', false)
-            ->assertSee('disabled')
-            ->assertDontSee('<img', false)
+            ->assertSee('Ahmad Firdaus')
+            ->assertSee('Hafiz Rahman')
+            ->assertSee('Daniel Zulkifli')
+            ->assertDontSee('Inactive')
+            ->assertSee('data-coach-name="Ahmad Firdaus"', false)
+            ->assertSee('data-coach-age="45"', false)
+            ->assertSee('data-player-name="Team Player"', false)
+            ->assertSee('data-player-age="20"', false)
+            ->assertSee('data-player-role="Pemain Biasa"', false)
+            ->assertSee('Position')
+            ->assertSee('Achievements')
+            ->assertDontSee('images/Formal.png')
             ->assertDontSee(asset('images/team-placeholder.svg'));
     }
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\LeagueTableController;
 use App\Models\Pasukan;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,11 @@ Route::get('/teams/{pasukan}', function (Pasukan $pasukan) {
             ->withCount('sekatan')
             ->orderBy('nama')
             ->paginate(15),
+        'coaches' => [
+            ['nama' => 'Ahmad Firdaus', 'umur' => 45, 'status' => 'Active'],
+            ['nama' => 'Hafiz Rahman', 'umur' => 39, 'status' => 'Active'],
+            ['nama' => 'Daniel Zulkifli', 'umur' => 42, 'status' => 'Active'],
+        ],
     ]);
 })->name('teams.show');
 
@@ -35,7 +41,8 @@ Route::view('/technical-official', 'dashboards.technical-official')
     ->name('technical-official.dashboard');
 
 Route::view('/schedule', 'schedule')->name('schedule');
-Route::view('/league-table', 'league-table')->name('league-table');
+Route::get('/league-table', [LeagueTableController::class, 'overall'])->name('league-table');
+Route::get('/league-standings', [LeagueTableController::class, 'groups'])->name('league-standings');
 Route::view('/statistics', 'statistics')->name('statistics');
 
 Route::middleware('auth')->group(function () {
