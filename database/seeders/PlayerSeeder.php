@@ -72,15 +72,35 @@ class PlayerSeeder extends Seeder
             ],
         ];
 
+        $demoPlayerNames = [
+            'Aiman Zikri',
+            'Adib Danish',
+            'Azfar Hakim',
+            'Danial Arman',
+            'Faiz Haziq',
+            'Farhan Luqman',
+            'Harith Zikri',
+            'Imran Hakim',
+            'Khairul Aiman',
+            'Muaz Fadhil',
+            'Nazmi Firdaus',
+            'Rizqi Azlan',
+            'Syafiq Anwar',
+        ];
         $positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Midfielder', 'Forward'];
-        $playerNumber = 1;
 
         foreach ($playersByTeam as $teamName => $playerNames) {
             $team = Pasukan::query()
                 ->where('nama_pasukan', $teamName)
                 ->firstOrFail();
 
+            $playerCount = $team->pemain()->count();
+
             foreach ($playerNames as $index => $playerName) {
+                if ($playerCount >= 18) {
+                    break;
+                }
+
                 $isSpecialPlayer = $teamName === 'KV Datuk Seri Abu Zahar Isnin'
                     && $playerName === 'Ahmad Firdaus';
                 $playerRole = match ($index) {
@@ -89,11 +109,10 @@ class PlayerSeeder extends Seeder
                     default => 'Player',
                 };
 
-                Pemain::updateOrCreate(
-                    ['no_ic' => sprintf('000000%06d', $playerNumber)],
+                $player = Pemain::firstOrCreate(
+                    ['id_pasukan' => $team->id, 'nama' => $playerName],
                     [
-                        'id_pasukan' => $team->id,
-                        'nama' => $playerName,
+                        'no_ic' => $this->uniqueDemoIdentityNumber($team->id, $index + 1),
                         'no_jersi' => $index + 1,
                         'umur' => 18 + ($index % 4),
                         'gambar' => $isSpecialPlayer ? 'images/Formal.png' : null,
@@ -102,8 +121,43 @@ class PlayerSeeder extends Seeder
                     ],
                 );
 
-                $playerNumber++;
+                if ($player->wasRecentlyCreated) {
+                    $playerCount++;
+                }
+            }
+
+            foreach ($demoPlayerNames as $index => $playerName) {
+                if ($playerCount >= 18) {
+                    break;
+                }
+
+                $jerseyNumber = $index + 6;
+                $player = Pemain::firstOrCreate(
+                    ['id_pasukan' => $team->id, 'nama' => sprintf('%s (Demo %d)', $playerName, $team->id)],
+                    [
+                        'no_ic' => $this->uniqueDemoIdentityNumber($team->id, $jerseyNumber),
+                        'no_jersi' => $jerseyNumber,
+                        'umur' => 18 + ($index % 4),
+                        'role_pemain' => 'Demo Player',
+                        'position' => $positions[($index + count($playerNames)) % count($positions)],
+                    ],
+                );
+
+                if ($player->wasRecentlyCreated) {
+                    $playerCount++;
+                }
             }
         }
+    }
+
+    private function uniqueDemoIdentityNumber(int $teamId, int $playerNumber): string
+    {
+        $identityNumber = 900000000000 + ($teamId * 100) + $playerNumber;
+
+        while (Pemain::query()->where('no_ic', (string) $identityNumber)->exists()) {
+            $identityNumber++;
+        }
+
+        return (string) $identityNumber;
     }
 }

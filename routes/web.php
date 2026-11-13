@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LeagueTableController;
+use App\Http\Controllers\StatisticsController;
 use App\Models\Pasukan;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +29,8 @@ Route::get('/teams/{pasukan}', function (Pasukan $pasukan) {
             ['nama' => 'Ahmad Firdaus', 'umur' => 45, 'status' => 'Active'],
             ['nama' => 'Hafiz Rahman', 'umur' => 39, 'status' => 'Active'],
             ['nama' => 'Daniel Zulkifli', 'umur' => 42, 'status' => 'Active'],
+            ['nama' => 'Rizal Hakim', 'umur' => 41, 'status' => 'Active'],
+            ['nama' => 'Azmi Khalid', 'umur' => 36, 'status' => 'Active'],
         ],
     ]);
 })->name('teams.show');
@@ -43,7 +46,9 @@ Route::view('/technical-official', 'dashboards.technical-official')
 Route::view('/schedule', 'schedule')->name('schedule');
 Route::get('/league-table', [LeagueTableController::class, 'overall'])->name('league-table');
 Route::get('/league-standings', [LeagueTableController::class, 'groups'])->name('league-standings');
-Route::view('/statistics', 'statistics')->name('statistics');
+Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics');
+Route::get('/statistics/yellow-cards', [StatisticsController::class, 'yellowCards'])->name('statistics.yellow-cards');
+Route::get('/statistics/red-cards', [StatisticsController::class, 'redCards'])->name('statistics.red-cards');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
