@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LeagueTableController;
+use App\Http\Controllers\MatchScheduleController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatisticsController;
 use App\Models\Pasukan;
 use Illuminate\Support\Facades\Route;
@@ -43,7 +44,8 @@ Route::view('/technical-official', 'dashboards.technical-official')
     ->middleware(['auth', 'verified', 'role:technical_official'])
     ->name('technical-official.dashboard');
 
-Route::view('/schedule', 'schedule')->name('schedule');
+Route::get('/schedule', [MatchScheduleController::class, 'index'])->name('schedule');
+Route::get('/matches/{perlawanan}', [MatchScheduleController::class, 'show'])->name('matches.show');
 Route::get('/league-table', [LeagueTableController::class, 'overall'])->name('league-table');
 Route::get('/league-standings', [LeagueTableController::class, 'groups'])->name('league-standings');
 Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics');
