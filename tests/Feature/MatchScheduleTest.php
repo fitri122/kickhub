@@ -47,7 +47,7 @@ class MatchScheduleTest extends TestCase
             ->assertSee(asset('images/alpha.png'))
             ->assertSee(route('matches.show', $completedMatch))
             ->assertSee(route('matches.show', $upcomingMatch))
-            ->assertSee(route('statistics'))
+            ->assertSee(route('ai-chat'))
             ->assertSee('data-match-day="1"', false)
             ->assertSee('data-match-day="2"', false)
             ->assertSee('bg-blue-900 text-white shadow-sm', false)

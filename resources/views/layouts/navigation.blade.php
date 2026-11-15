@@ -1,28 +1,31 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+<nav x-data="{ open: false }" class="sticky top-0 z-40 border-b border-blue-100/70 bg-white/90 shadow-sm backdrop-blur-xl">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
+        <div class="flex h-[4.5rem] justify-between">
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ url('/') }}">
-                        <img src="{{ asset('images/Logo.png') }}" alt="Logo" class="block h-11 w-auto">
+                        <img src="{{ asset('images/Logo.png') }}" alt="Logo" class="block h-14 w-auto">
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <div class="hidden items-center gap-2 lg:ms-8 lg:flex">
                     <x-nav-link :href="url('/')" :active="request()->is('/') || request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('schedule')" :active="request()->routeIs('schedule')">
+                    <x-nav-link :href="route('schedule')" :active="request()->routeIs('schedule', 'matches.show')">
                         {{ __('Schedule') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('league-table')" :active="request()->routeIs('league-table')">
+                    <x-nav-link :href="route('league-table')" :active="request()->routeIs('league-table', 'league-standings')">
                         {{ __('League Table') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('statistics')" :active="request()->routeIs('statistics')">
+                    <x-nav-link :href="route('statistics')" :active="request()->routeIs('statistics*')">
                         {{ __('Statistics') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('ai-chat')" :active="request()->routeIs('ai-chat')">
+                        {{ __('AI Chat') }}
                     </x-nav-link>
                     @auth
                         @if (Auth::user()->role === \App\Models\User::ROLE_TEAM_MANAGER)
@@ -39,11 +42,11 @@
             </div>
 
             <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="hidden lg:ms-6 lg:flex lg:items-center">
                 @auth
                     <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                        <button class="inline-flex items-center gap-2 rounded-xl border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-[#111b48] shadow-sm transition hover:border-blue-200 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2">
                             <div>{{ Auth::user()->name }}</div>
 
                             <div class="ms-1">
@@ -81,8 +84,8 @@
             </div>
 
             <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+            <div class="-me-2 flex items-center lg:hidden">
+                <button @click="open = ! open" :aria-expanded="open" aria-label="{{ __('Toggle navigation') }}" class="inline-flex items-center justify-center rounded-xl p-2 text-[#111b48] transition hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -93,19 +96,22 @@
     </div>
 
     <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden lg:hidden">
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="url('/')" :active="request()->is('/') || request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('schedule')" :active="request()->routeIs('schedule')">
+            <x-responsive-nav-link :href="route('schedule')" :active="request()->routeIs('schedule', 'matches.show')">
                 {{ __('Schedule') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('league-table')" :active="request()->routeIs('league-table')">
+            <x-responsive-nav-link :href="route('league-table')" :active="request()->routeIs('league-table', 'league-standings')">
                 {{ __('League Table') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('statistics')" :active="request()->routeIs('statistics')">
+            <x-responsive-nav-link :href="route('statistics')" :active="request()->routeIs('statistics*')">
                 {{ __('Statistics') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('ai-chat')" :active="request()->routeIs('ai-chat')">
+                {{ __('AI Chat') }}
             </x-responsive-nav-link>
             @auth
                 @if (Auth::user()->role === \App\Models\User::ROLE_TEAM_MANAGER)

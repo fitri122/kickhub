@@ -63,7 +63,7 @@ $maxWidth = [
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
     >
-        <div class="absolute inset-0 bg-gray-500 opacity-75 {{ $blurBackground ? 'backdrop-blur-sm' : '' }}"></div>
+        <div class="absolute inset-0 bg-[#0b1236]/75 {{ $blurBackground ? 'backdrop-blur-md' : '' }}"></div>
     </div>
 
     <div
@@ -71,7 +71,7 @@ $maxWidth = [
         role="dialog"
         aria-modal="true"
         @if ($labelledBy) aria-labelledby="{{ $labelledBy }}" @endif
-        class="{{ $centered ? 'w-full' : 'mb-6' }} transform overflow-hidden rounded-lg bg-white shadow-xl transition-all sm:mx-auto sm:w-full {{ $maxWidth }}"
+        class="{{ $centered ? 'w-full' : 'mb-6' }} transform overflow-hidden rounded-3xl border border-white/80 bg-white shadow-2xl ring-1 ring-blue-950/10 transition-all sm:mx-auto sm:w-full {{ $maxWidth }}"
         x-transition:enter="ease-out duration-300"
         x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
         x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"

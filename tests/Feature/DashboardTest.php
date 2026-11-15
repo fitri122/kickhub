@@ -25,6 +25,9 @@ class DashboardTest extends TestCase
         $this->get('/')
             ->assertOk()
             ->assertSee('Every team. One tournament.')
+            ->assertSee('Bola sepak lagi mudah difahami.')
+            ->assertSee('Mula chat AI')
+            ->assertSee(route('ai-chat'))
             ->assertSee('KickHub United')
             ->assertSee('Melaka')
             ->assertSee(route('teams.show', $team));

@@ -5,6 +5,8 @@ use App\Http\Controllers\MatchScheduleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatisticsController;
 use App\Models\Pasukan;
+use App\Models\SekatanPemain;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,7 +25,10 @@ Route::get('/teams/{pasukan}', function (Pasukan $pasukan) {
     return view('teams.show', [
         'team' => $pasukan,
         'players' => $pasukan->pemain()
-            ->withCount('sekatan')
+            ->withCount([
+                'sekatan as sekatan_count' => fn (Builder $query) => $query
+                    ->where('jenis_sekatan', SekatanPemain::TYPE_MANUAL),
+            ])
             ->orderBy('nama')
             ->paginate(15),
         'coaches' => [
@@ -45,6 +50,7 @@ Route::view('/technical-official', 'dashboards.technical-official')
     ->name('technical-official.dashboard');
 
 Route::get('/schedule', [MatchScheduleController::class, 'index'])->name('schedule');
+Route::view('/ai-chat', 'ai-chat')->name('ai-chat');
 Route::get('/matches/{perlawanan}', [MatchScheduleController::class, 'show'])->name('matches.show');
 Route::get('/league-table', [LeagueTableController::class, 'overall'])->name('league-table');
 Route::get('/league-standings', [LeagueTableController::class, 'groups'])->name('league-standings');

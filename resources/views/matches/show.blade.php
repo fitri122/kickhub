@@ -2,28 +2,29 @@
     <div class="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:py-12">
         <a
             href="{{ route('schedule') }}"
-            class="text-sm font-semibold text-blue-800 hover:text-blue-950"
+            class="inline-flex min-h-10 items-center gap-2 rounded-xl border border-blue-100 bg-white/80 px-3 text-sm font-bold text-blue-900 shadow-sm transition hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2"
         >
-            &larr; {{ __('Back to Schedule') }}
+            <span aria-hidden="true">&larr;</span> {{ __('Back to Schedule') }}
         </a>
 
-        <section class="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm" aria-labelledby="match-details-heading">
-            <div class="flex flex-wrap items-start justify-between gap-4 border-b border-gray-100 px-5 py-5 sm:px-8">
+        <section class="overflow-hidden rounded-3xl border border-white bg-white/95 shadow-xl shadow-blue-950/5" aria-labelledby="match-details-heading">
+            <div class="relative isolate flex flex-wrap items-start justify-between gap-4 overflow-hidden border-b border-white/10 bg-gradient-to-r from-[#0b1236] via-[#172b67] to-[#24457e] px-5 py-5 text-white sm:px-8">
+                <div class="pointer-events-none absolute -right-10 -top-16 -z-10 h-52 w-52 rounded-full bg-cyan-300/15 blur-3xl" aria-hidden="true"></div>
                 <div>
-                    <p class="text-xs font-bold uppercase tracking-widest text-blue-800">{{ __('Match #:number', ['number' => $match->id]) }}</p>
-                    <h1 id="match-details-heading" class="mt-1 text-2xl font-extrabold text-gray-900 sm:text-3xl">
+                    <p class="text-xs font-extrabold uppercase tracking-[0.16em] text-amber-300">{{ __('Match #:number', ['number' => $match->id]) }}</p>
+                    <h1 id="match-details-heading" class="mt-1 text-2xl font-black sm:text-3xl">
                         {{ __('Match Details') }}
                     </h1>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                    <span class="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-800">{{ $groupLabel }}</span>
+                    <span class="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-bold text-white">{{ $groupLabel }}</span>
                     <span class="{{ $isCompleted ? 'bg-indigo-50 text-indigo-800' : 'bg-gray-100 text-gray-700' }} rounded-full px-3 py-1.5 text-xs font-bold">
                         {{ $statusLabel }}
                     </span>
                 </div>
             </div>
 
-            <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 px-4 py-8 sm:gap-8 sm:px-10 sm:py-12">
+            <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 bg-gradient-to-b from-blue-50/70 to-white px-4 py-8 sm:gap-8 sm:px-10 sm:py-12">
                 <div class="flex min-w-0 flex-col items-center gap-3 text-center">
                     <x-team-emblem :team="$match->pasukan1" />
                     <h2 class="max-w-full break-words text-sm font-extrabold leading-6 text-gray-900 sm:text-lg">
@@ -50,7 +51,7 @@
                 </div>
             </div>
 
-            <dl class="grid gap-px border-t border-gray-100 bg-gray-100 sm:grid-cols-2 lg:grid-cols-4">
+            <dl class="grid gap-px border-t border-blue-100 bg-blue-100 sm:grid-cols-2 lg:grid-cols-4">
                 <div class="bg-white px-5 py-4 sm:px-6">
                     <dt class="text-xs font-bold uppercase tracking-wider text-gray-500">{{ __('Match date') }}</dt>
                     <dd class="mt-1 text-sm font-semibold text-gray-900">{{ $match->tarikh->format('D, d M Y') }}</dd>

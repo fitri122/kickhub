@@ -9,12 +9,13 @@
         x-on:open-coach-details="selectedCoach = $event.detail; $dispatch('open-modal', 'coach-details')"
     >
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-12">
-        <a href="{{ url('/') }}" class="text-sm font-semibold text-blue-800 hover:text-blue-950">
-            &larr; {{ __('Back to Dashboard') }}
+        <a href="{{ url('/') }}" class="inline-flex min-h-10 items-center gap-2 rounded-xl border border-blue-100 bg-white/80 px-3 text-sm font-bold text-blue-900 shadow-sm transition hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2">
+            <span aria-hidden="true">&larr;</span> {{ __('Back to Dashboard') }}
         </a>
 
-        <section class="mt-5 flex flex-col items-center gap-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:flex-row sm:p-8">
-            <div class="flex h-36 w-36 shrink-0 items-center justify-center rounded-xl bg-gray-50 p-4 sm:h-40 sm:w-40">
+        <section class="relative isolate mt-5 flex flex-col items-center gap-6 overflow-hidden rounded-3xl bg-gradient-to-br from-[#0b1236] via-[#172b67] to-[#3157a4] p-5 text-white shadow-xl sm:flex-row sm:p-8">
+            <div class="pointer-events-none absolute -right-10 -top-20 -z-10 h-64 w-64 rounded-full bg-amber-300/15 blur-3xl" aria-hidden="true"></div>
+            <div class="flex h-36 w-36 shrink-0 items-center justify-center rounded-2xl border border-white/20 bg-white/10 p-4 shadow-inner sm:h-40 sm:w-40">
                 @if ($team->logo)
                     <img
                         src="{{ str_starts_with($team->logo, 'http') || str_starts_with($team->logo, 'images/') ? asset($team->logo) : asset('storage/'.$team->logo) }}"
@@ -24,14 +25,14 @@
                 @endif
             </div>
             <div class="min-w-0 flex-1 text-center sm:text-left">
-                <p class="text-sm font-bold uppercase tracking-widest text-blue-800">{{ __('SuKoV    Team') }}</p>
-                <h1 class="mt-2 break-words text-2xl font-extrabold leading-tight text-gray-900 sm:text-3xl">{{ $team->nama_pasukan }}</h1>
-                <p class="mt-3 text-gray-600">{{ $team->nama_kolej }}</p>
+                <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-amber-300">{{ __('SuKoV Team') }}</p>
+                <h1 class="mt-2 break-words text-2xl font-black leading-tight sm:text-3xl">{{ $team->nama_pasukan }}</h1>
+                <p class="mt-3 text-blue-100">{{ $team->nama_kolej }}</p>
             </div>
         </section>
 
         <section class="mt-8">
-            <div class="flex border-b border-gray-200" role="tablist" aria-label="{{ __('Team information') }}">
+            <div class="inline-flex max-w-full flex-wrap gap-1 rounded-2xl border border-white bg-white/80 p-1.5 shadow-sm" role="tablist" aria-label="{{ __('Team information') }}">
                 <button
                     id="coaches-tab"
                     type="button"
@@ -39,8 +40,8 @@
                     aria-controls="coaches-panel"
                     @click="activeTab = 'coaches'"
                     :aria-selected="activeTab === 'coaches'"
-                    :class="activeTab === 'coaches' ? 'border-blue-900 text-blue-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'"
-                    class="border-b-2 px-5 py-3 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-inset"
+                    :class="activeTab === 'coaches' ? 'bg-[#111b48] text-white shadow-sm' : 'text-gray-600 hover:bg-blue-50 hover:text-blue-900'"
+                    class="rounded-xl px-5 py-3 text-sm font-bold transition focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-inset"
                 >
                     {{ __('Coaches') }}
                 </button>
@@ -51,8 +52,8 @@
                     aria-controls="players-panel"
                     @click="activeTab = 'players'"
                     :aria-selected="activeTab === 'players'"
-                    :class="activeTab === 'players' ? 'border-blue-900 text-blue-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'"
-                    class="border-b-2 px-5 py-3 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-inset"
+                    :class="activeTab === 'players' ? 'bg-[#111b48] text-white shadow-sm' : 'text-gray-600 hover:bg-blue-50 hover:text-blue-900'"
+                    class="rounded-xl px-5 py-3 text-sm font-bold transition focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-inset"
                 >
                     {{ __('Players') }}
                 </button>
@@ -79,7 +80,7 @@
                                 ->map(fn ($part) => substr($part, 0, 1))
                                 ->implode('');
                         @endphp
-                        <article class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md">
+                        <article class="rounded-2xl border border-white bg-white/95 p-5 shadow-lg shadow-blue-950/5 transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-xl">
                             <div class="flex items-start gap-4">
                                 <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-blue-50 text-sm font-extrabold text-blue-900">
                                     @if ($player->gambar)
@@ -155,7 +156,7 @@
                                 ->map(fn ($part) => substr($part, 0, 1))
                                 ->implode('');
                         @endphp
-                        <article class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md">
+                        <article class="rounded-2xl border border-white bg-white/95 p-5 shadow-lg shadow-blue-950/5 transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-xl">
                             <div class="flex items-start gap-4">
                                 <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-sm font-extrabold text-amber-800">{{ $initials }}</div>
                                 <div class="min-w-0 flex-1">

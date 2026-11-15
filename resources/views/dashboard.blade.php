@@ -85,6 +85,79 @@
             </div>
         </section>
 
+        <section class="relative isolate mt-8 overflow-hidden rounded-3xl bg-gradient-to-br from-[#0b1236] via-[#172b67] to-[#3157a4] text-white shadow-xl" aria-labelledby="ai-promo-title">
+            <div class="pointer-events-none absolute -right-16 -top-24 -z-10 h-80 w-80 rounded-full bg-cyan-300/20 blur-3xl" aria-hidden="true"></div>
+            <div class="pointer-events-none absolute -bottom-28 left-1/4 -z-10 h-64 w-64 rounded-full bg-indigo-400/20 blur-3xl" aria-hidden="true"></div>
+
+            <div class="grid items-center gap-8 p-6 sm:p-8 lg:grid-cols-[1.1fr_0.9fr] lg:p-10">
+                <div>
+                    <p class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-extrabold uppercase tracking-[0.16em] text-cyan-100">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3.75 13.9 9l5.35 1.9L13.9 12.8 12 18.15l-1.9-5.35L4.75 10.9 10.1 9 12 3.75Z" />
+                        </svg>
+                        {{ __('KickHub AI · Powered by Gemini') }}
+                    </p>
+                    <h2 id="ai-promo-title" class="mt-4 max-w-xl text-3xl font-black leading-tight tracking-tight sm:text-4xl">
+                        {{ __('Bola sepak lagi mudah difahami.') }}
+                    </h2>
+                    <p class="mt-3 max-w-xl text-sm leading-6 text-blue-100 sm:text-base">
+                        {{ __('Nak tahu peraturan, taktikal atau format kejohanan? Tanya KickHub AI dan teroka permainan dengan lebih yakin.') }}
+                    </p>
+
+                    <div class="mt-6 flex flex-wrap items-center gap-4">
+                        <a
+                            href="{{ route('ai-chat') }}"
+                            class="inline-flex min-h-12 items-center justify-center gap-3 rounded-xl bg-amber-400 px-5 py-3 text-sm font-extrabold text-[#111b48] shadow-sm transition hover:bg-amber-300 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#172b67]"
+                        >
+                            {{ __('Mula chat AI') }}
+                            <span aria-hidden="true">&rarr;</span>
+                        </a>
+                        <span class="text-sm font-medium text-blue-100">{{ __('Percuma · Tak perlu log masuk') }}</span>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl border border-white/15 bg-white/10 p-4 shadow-inner backdrop-blur sm:p-5">
+                    <p class="px-1 text-xs font-extrabold uppercase tracking-[0.16em] text-cyan-100">{{ __('Tanya tentang') }}</p>
+                    <div class="mt-3 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+                        <div class="flex items-center gap-3 rounded-xl border border-white/10 bg-[#0b1236]/40 p-3">
+                            <span class="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-cyan-300/15 text-cyan-200" aria-hidden="true">
+                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <circle cx="12" cy="12" r="9" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l2.5 2.5M8.5 3.8l1 2M15.5 3.8l-1 2" />
+                                </svg>
+                            </span>
+                            <span>
+                                <span class="block text-sm font-bold">{{ __('Peraturan bola sepak') }}</span>
+                                <span class="mt-0.5 block text-xs text-blue-100">{{ __('Offside, foul & kad') }}</span>
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 rounded-xl border border-white/10 bg-[#0b1236]/40 p-3">
+                            <span class="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-violet-300/15 text-violet-200" aria-hidden="true">
+                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2ZM8 7h8M8 11h6" />
+                                </svg>
+                            </span>
+                            <span>
+                                <span class="block text-sm font-bold">{{ __('Taktik & posisi') }}</span>
+                                <span class="mt-0.5 block text-xs text-blue-100">{{ __('Formasi & peranan pemain') }}</span>
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 rounded-xl border border-white/10 bg-[#0b1236]/40 p-3">
+                            <span class="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-amber-300/15 text-amber-200" aria-hidden="true">
+                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 12 3l9 4.5-9 4.5-9-4.5ZM3 12l9 4.5 9-4.5M3 16.5 12 21l9-4.5" />
+                                </svg>
+                            </span>
+                            <span>
+                                <span class="block text-sm font-bold">{{ __('Info kejohanan') }}</span>
+                                <span class="mt-0.5 block text-xs text-blue-100">{{ __('Format & kiraan mata') }}</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section class="mt-12" aria-labelledby="teams-heading">
             <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
                 <div>

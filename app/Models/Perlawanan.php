@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Observers\PerlawananObserver;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+#[ObservedBy([PerlawananObserver::class])]
 #[Fillable([
     'id_kumpulan',
     'id_pasukan_1',
@@ -56,6 +59,12 @@ class Perlawanan extends Model
     public function rekodDisiplin(): HasMany
     {
         return $this->hasMany(RekodDisiplin::class, 'id_perlawanan');
+    }
+
+    public function suspensionsToServe(): HasMany
+    {
+        return $this->hasMany(SekatanPemain::class, 'id_perlawanan_digantung')
+            ->where('jenis_sekatan', SekatanPemain::TYPE_DISCIPLINARY);
     }
 
     // Ramalan AI bagi perlawanan ini

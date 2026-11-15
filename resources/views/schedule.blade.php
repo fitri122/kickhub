@@ -1,12 +1,27 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Schedule') }}
-        </h2>
-    </x-slot>
-
     <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-8">
-        <section x-data="{ activeDay: '1' }" class="space-y-5" aria-label="{{ __('Match day filters') }}">
+        <section class="relative isolate overflow-hidden rounded-3xl bg-gradient-to-br from-[#0b1236] via-[#172b67] to-[#3157a4] px-6 py-7 text-white shadow-xl sm:px-8 sm:py-9" aria-labelledby="schedule-heading">
+            <div class="pointer-events-none absolute -right-12 -top-20 -z-10 h-64 w-64 rounded-full bg-cyan-300/20 blur-3xl" aria-hidden="true"></div>
+            <div class="relative flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-amber-300">{{ __('KICKHUB · MATCHDAY') }}</p>
+                    <h1 id="schedule-heading" class="mt-3 text-3xl font-black tracking-tight sm:text-4xl">{{ __('Schedule') }}</h1>
+                    <p class="mt-2 max-w-xl text-sm leading-6 text-blue-100 sm:text-base">{{ __('Every fixture, one place. Pick a match day and follow the tournament action.') }}</p>
+                </div>
+                <div class="grid grid-cols-2 gap-3 sm:min-w-64">
+                    <div class="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur">
+                        <p class="text-xs font-semibold text-blue-100">{{ __('Fixtures') }}</p>
+                        <p class="mt-1 text-2xl font-black">{{ number_format($matches->count()) }}</p>
+                    </div>
+                    <div class="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur">
+                        <p class="text-xs font-semibold text-blue-100">{{ __('Match days') }}</p>
+                        <p class="mt-1 text-2xl font-black">{{ count($dayCounts) }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section x-data="{ activeDay: '1' }" class="mt-6 space-y-5" aria-label="{{ __('Match day filters') }}">
             <div class="flex flex-wrap gap-2" role="group" aria-label="{{ __('Filter matches by day') }}">
                 @foreach (['1', '2', '3'] as $day)
                     <button
@@ -121,19 +136,27 @@
             @endif
         </section>
 
-        <section class="flex flex-col gap-5 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6">
-            <div>
-                <p class="text-xs font-bold uppercase tracking-widest text-blue-800">{{ __('Tournament insights') }}</p>
-                <h2 class="mt-1 text-lg font-extrabold text-gray-900">{{ __('Match Analysis') }}</h2>
-                <p class="mt-1 text-sm text-gray-600">{{ __('Explore scorers, clean sheets and disciplinary statistics.') }}</p>
+        <section class="relative isolate mt-5 overflow-hidden rounded-3xl bg-gradient-to-br from-[#111b48] via-[#1d3477] to-[#3157a4] px-6 py-7 text-white shadow-lg sm:px-8 sm:py-8">
+            <div class="pointer-events-none absolute -right-10 -top-20 -z-10 h-64 w-64 rounded-full bg-cyan-300/20 blur-3xl" aria-hidden="true"></div>
+            <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+                <div class="max-w-2xl">
+                    <p class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-cyan-100">
+                        <span class="h-2 w-2 rounded-full bg-emerald-300" aria-hidden="true"></span>
+                        {{ __('KickHub AI · Powered by Gemini') }}
+                    </p>
+                    <h2 class="mt-4 text-2xl font-extrabold tracking-tight sm:text-3xl">{{ __('Need help with football? Just ask.') }}</h2>
+                    <p class="mt-2 max-w-xl text-sm leading-6 text-blue-100 sm:text-base">
+                        {{ __('Ask about football rules, tactics, or the tournament. The AI chat is open to everyone — no sign-in needed.') }}
+                    </p>
+                </div>
+                <a
+                    href="{{ route('ai-chat') }}"
+                    class="inline-flex min-h-12 shrink-0 items-center justify-center gap-3 rounded-xl bg-amber-400 px-5 py-3 text-sm font-extrabold text-[#111b48] shadow-sm transition hover:bg-amber-300 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#1d3477]"
+                >
+                    {{ __('Chat with Gemini AI') }}
+                    <span aria-hidden="true">&rarr;</span>
+                </a>
             </div>
-            <a
-                href="{{ route('statistics') }}"
-                class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[#111b48] px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2"
-            >
-                {{ __('Analysis Match') }}
-                <span aria-hidden="true">&rarr;</span>
-            </a>
         </section>
     </div>
 </x-app-layout>

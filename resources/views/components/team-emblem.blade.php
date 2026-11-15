@@ -1,4 +1,4 @@
-@props(['team'])
+@props(['team', 'size' => 'md'])
 
 @php
     $words = array_filter(
@@ -17,7 +17,7 @@
         : asset('storage/'.$team->logo);
 @endphp
 
-<div class="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-full border border-gray-200 bg-white p-2 shadow-sm sm:h-24 sm:w-24">
+<div class="grid shrink-0 place-items-center overflow-hidden rounded-full border border-gray-200 bg-white shadow-sm {{ $size === 'sm' ? 'h-10 w-10 p-1' : 'h-20 w-20 p-2 sm:h-24 sm:w-24' }}">
     @if ($team->logo)
         <img
             src="{{ $logoUrl }}"
@@ -29,7 +29,7 @@
         <span
             role="img"
             aria-label="{{ __(':team initials', ['team' => $team->nama_pasukan]) }}"
-            class="grid h-full w-full place-items-center rounded-full bg-blue-50 text-lg font-extrabold tracking-wide text-[#111b48]"
+            class="grid h-full w-full place-items-center rounded-full bg-blue-50 {{ $size === 'sm' ? 'text-xs' : 'text-lg' }} font-extrabold tracking-wide text-[#111b48]"
         >
             {{ $initials }}
         </span>

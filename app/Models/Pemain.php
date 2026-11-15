@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Observers\PemainObserver;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+#[ObservedBy([PemainObserver::class])]
 #[Fillable([
     'id_pasukan',
     'nama',
@@ -49,5 +52,15 @@ class Pemain extends Model
     public function sekatan(): HasMany
     {
         return $this->hasMany(SekatanPemain::class, 'id_pemain');
+    }
+
+    public function manualSekatan(): HasMany
+    {
+        return $this->sekatan()->where('jenis_sekatan', SekatanPemain::TYPE_MANUAL);
+    }
+
+    public function suspensions(): HasMany
+    {
+        return $this->sekatan()->where('jenis_sekatan', SekatanPemain::TYPE_DISCIPLINARY);
     }
 }

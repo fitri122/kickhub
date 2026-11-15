@@ -14,7 +14,7 @@ class StatisticsController extends Controller
     {
         $teams = Pasukan::query()
             ->orderBy('nama_pasukan')
-            ->get(['id', 'nama_pasukan']);
+            ->get(['id', 'nama_pasukan', 'logo']);
 
         $cleanSheetCounts = $teams
             ->mapWithKeys(fn (Pasukan $team): array => [$team->id => 0])
@@ -26,30 +26,26 @@ class StatisticsController extends Controller
             ->get(['id_pasukan_1', 'id_pasukan_2', 'skor_pasukan_1', 'skor_pasukan_2']);
 
         foreach ($completedMatches as $match) {
-            if ((int) $match->skor_pasukan_2 === 0) {
+            if ((int) $match->skor_pasukan_1 > (int) $match->skor_pasukan_2
+                && (int) $match->skor_pasukan_2 === 0) {
                 $cleanSheetCounts[$match->id_pasukan_1]++;
             }
 
-            if ((int) $match->skor_pasukan_1 === 0) {
+            if ((int) $match->skor_pasukan_2 > (int) $match->skor_pasukan_1
+                && (int) $match->skor_pasukan_1 === 0) {
                 $cleanSheetCounts[$match->id_pasukan_2]++;
             }
         }
 
-        $cleanSheets = [];
+        $cleanSheets = $teams
+            ->map(function (Pasukan $team) use ($cleanSheetCounts): Pasukan {
+                $team->setAttribute('clean_sheets', $cleanSheetCounts[$team->id]);
 
-        foreach ($teams as $team) {
-            $cleanSheetCount = $cleanSheetCounts[$team->id];
-
-            if ($cleanSheetCount > 0) {
-                $cleanSheets[] = [
-                    'team_name' => $team->nama_pasukan,
-                    'clean_sheets' => $cleanSheetCount,
-                ];
-            }
-        }
-
-        usort($cleanSheets, static fn (array $left, array $right): int => ($right['clean_sheets'] <=> $left['clean_sheets'])
-            ?: strcasecmp($left['team_name'], $right['team_name']));
+                return $team;
+            })
+            ->sort(static fn (Pasukan $left, Pasukan $right): int => ($right->clean_sheets <=> $left->clean_sheets)
+                ?: strcasecmp($left->nama_pasukan, $right->nama_pasukan))
+            ->values();
 
         $topScorers = JaringanGol::query()
             ->join('pemain', 'pemain.id', '=', 'jaringan_gol.id_pemain')
@@ -57,22 +53,24 @@ class StatisticsController extends Controller
             ->select([
                 'pemain.id as player_id',
                 'pemain.nama as player_name',
+                'pemain.gambar as player_image',
                 'pasukan.nama_pasukan as team_name',
             ])
             ->selectRaw('COUNT(jaringan_gol.id) AS score')
-            ->groupBy('pemain.id', 'pemain.nama', 'pasukan.nama_pasukan')
+            ->groupBy('pemain.id', 'pemain.nama', 'pemain.gambar', 'pasukan.nama_pasukan')
             ->orderByDesc('score')
             ->orderBy('pemain.nama')
-            ->limit(3)
+            ->orderBy('pemain.id')
             ->get();
 
         return view('statistics', [
             'totalMatches' => Perlawanan::query()->count(),
+            'totalGoals' => JaringanGol::query()->count(),
             'totalScorers' => JaringanGol::query()->distinct()->count('id_pemain'),
             'yellowCardTotal' => RekodDisiplin::query()->where('jenis_kad', 'kuning')->count(),
             'redCardTotal' => RekodDisiplin::query()->where('jenis_kad', 'merah')->count(),
             'topScorers' => $topScorers,
-            'cleanSheets' => array_slice($cleanSheets, 0, 3),
+            'cleanSheets' => $cleanSheets,
         ]);
     }
 

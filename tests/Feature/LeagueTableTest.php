@@ -15,6 +15,66 @@ class LeagueTableTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_standings_apply_win_draw_loss_points_and_recalculate_after_a_result_edit(): void
+    {
+        $manager = User::factory()->create();
+        $group = Kumpulan::create(['nama_kumpulan' => 'Kumpulan A']);
+        $alpha = $this->createTeam('Alpha FC', $group, $manager);
+        $bravo = $this->createTeam('Bravo FC', $group, $manager);
+        $charlie = $this->createTeam('Charlie FC', $group, $manager);
+
+        $this->createMatch($group, $alpha, $bravo, 2, 0);
+        $this->createMatch($group, $alpha, $charlie, 1, 1);
+        $bravoCharlieMatch = $this->createMatch($group, $bravo, $charlie, 1, 0);
+
+        $this->get(route('league-table'))
+            ->assertOk()
+            ->assertViewHas('tables', fn (array $tables): bool => array_map(
+                fn (array $standing): array => [
+                    $standing['team_name'],
+                    $standing['played'],
+                    $standing['wins'],
+                    $standing['draws'],
+                    $standing['losses'],
+                    $standing['goals_for'],
+                    $standing['goals_against'],
+                    $standing['goal_difference'],
+                    $standing['points'],
+                ],
+                $tables[0]['standings'],
+            ) === [
+                ['Alpha FC', 2, 1, 1, 0, 3, 1, 2, 4],
+                ['Bravo FC', 2, 1, 0, 1, 1, 2, -1, 3],
+                ['Charlie FC', 2, 0, 1, 1, 1, 2, -1, 1],
+            ]);
+
+        $bravoCharlieMatch->update([
+            'skor_pasukan_1' => 0,
+            'skor_pasukan_2' => 1,
+        ]);
+
+        $this->get(route('league-table'))
+            ->assertOk()
+            ->assertViewHas('tables', fn (array $tables): bool => array_column($tables[0]['standings'], 'team_name') === [
+                'Alpha FC',
+                'Charlie FC',
+                'Bravo FC',
+            ]);
+
+        $bravoCharlieMatch->delete();
+
+        $this->get(route('league-table'))
+            ->assertOk()
+            ->assertViewHas('tables', fn (array $tables): bool => array_map(
+                fn (array $standing): array => [$standing['team_name'], $standing['played'], $standing['points']],
+                $tables[0]['standings'],
+            ) === [
+                ['Alpha FC', 2, 4],
+                ['Charlie FC', 1, 1],
+                ['Bravo FC', 1, 0],
+            ]);
+    }
+
     public function test_league_table_combines_groups_and_ranks_completed_matches_with_team_statistics(): void
     {
         $manager = User::factory()->create();
