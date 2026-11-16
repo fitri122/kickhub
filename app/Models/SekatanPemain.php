@@ -19,6 +19,8 @@ class SekatanPemain extends Model
 
     public const TYPE_DISCIPLINARY = 'disciplinary';
 
+    public const STATUS_BLOCKED = 'Blacklisted';
+
     public const STATUS_PENDING = 'Pending';
 
     public const STATUS_SERVED = 'Served';

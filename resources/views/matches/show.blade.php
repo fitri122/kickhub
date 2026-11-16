@@ -11,7 +11,7 @@
             <div class="relative isolate flex flex-wrap items-start justify-between gap-4 overflow-hidden border-b border-white/10 bg-gradient-to-r from-[#0b1236] via-[#172b67] to-[#24457e] px-5 py-5 text-white sm:px-8">
                 <div class="pointer-events-none absolute -right-10 -top-16 -z-10 h-52 w-52 rounded-full bg-cyan-300/15 blur-3xl" aria-hidden="true"></div>
                 <div>
-                    <p class="text-xs font-extrabold uppercase tracking-[0.16em] text-amber-300">{{ __('Match #:number', ['number' => $match->id]) }}</p>
+                    <p class="text-xs font-extrabold uppercase tracking-[0.16em] text-amber-300">{{ $match->displayLabel() }}</p>
                     <h1 id="match-details-heading" class="mt-1 text-2xl font-black sm:text-3xl">
                         {{ __('Match Details') }}
                     </h1>

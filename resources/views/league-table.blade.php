@@ -8,6 +8,13 @@
                     {{ $activePage === 'overall' ? __('Overall League Standings') : __('League Standings') }}
                 </h1>
                 <p class="mt-2 max-w-2xl text-sm leading-6 text-blue-100 sm:text-base">{{ __('Follow every team’s progress, points and goal difference throughout the tournament.') }}</p>
+                @auth
+                    @if (Auth::user()->role === \App\Models\User::ROLE_TECHNICAL_OFFICIAL && $activePage === 'overall')
+                        <a href="{{ route('league-standings') }}#team-group-assignments" class="mt-4 inline-flex min-h-10 items-center rounded-xl bg-amber-400 px-4 text-sm font-extrabold text-[#111b48] transition hover:bg-amber-300 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#172b67]">
+                            {{ __('Manage Team Groups') }}
+                        </a>
+                    @endif
+                @endauth
             </section>
 
             <nav class="flex flex-wrap gap-3" aria-label="{{ __('League table views') }}">
@@ -26,6 +33,92 @@
                     {{ __('League Standings') }}
                 </a>
             </nav>
+
+            @if ($activePage === 'groups')
+                @auth
+                    @if (Auth::user()->role === \App\Models\User::ROLE_TECHNICAL_OFFICIAL)
+                        @if ($errors->any())
+                            <div role="alert" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                                @foreach ($errors->all() as $error)
+                                    <p>{{ $error }}</p>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        @if (session('status'))
+                            <div role="status" class="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-800">
+                                {{ session('status') }}
+                            </div>
+                        @endif
+
+                        <section id="team-group-assignments" class="space-y-4" aria-labelledby="team-group-assignments-heading">
+                            <div class="border-b border-blue-100 bg-gradient-to-r from-blue-50 to-white px-5 py-4 sm:px-6">
+                                <h2 id="team-group-assignments-heading" class="text-lg font-extrabold text-[#111b48]">{{ __('Manage Team Groups') }}</h2>
+                                <p class="mt-1 text-sm text-gray-600">{{ __('Select up to four teams for each group. Saving moves selected teams into that group.') }}</p>
+                            </div>
+                            <div class="grid gap-5 lg:grid-cols-2">
+                                @foreach ($groups as $group)
+                                    <section id="group-{{ $group->id }}-team-selection" class="overflow-hidden rounded-2xl border border-white bg-white/95 shadow-lg shadow-blue-950/5" aria-labelledby="group-{{ $group->id }}-selection-heading">
+                                        <form
+                                            method="POST"
+                                            action="{{ route('technical-official.league-standings.groups.teams.update', $group) }}"
+                                            x-data="{ teamIds: @js($assignedTeamIdsByGroup[$group->id] ?? []) }"
+                                        >
+                                            @csrf
+                                            @method('PATCH')
+                                            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-blue-100 bg-gradient-to-r from-blue-50 to-white px-5 py-4">
+                                                <h3 id="group-{{ $group->id }}-selection-heading" class="text-lg font-extrabold text-[#111b48]">{{ str_replace('Kumpulan ', 'Group ', $group->nama_kumpulan) }}</h3>
+                                                <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-extrabold text-blue-900">
+                                                    <span x-text="teamIds.length">{{ count($assignedTeamIdsByGroup[$group->id] ?? []) }}</span> / 4 {{ __('selected') }}
+                                                </span>
+                                            </div>
+                                            <div class="overflow-x-auto">
+                                                <table class="w-full min-w-[320px] divide-y divide-gray-100 text-left text-sm">
+                                                    <thead class="bg-gray-50 text-xs font-bold uppercase tracking-wider text-gray-600">
+                                                        <tr>
+                                                            <th scope="col" class="px-5 py-3">{{ __('Team') }}</th>
+                                                            <th scope="col" class="px-5 py-3 text-center">{{ __('Select') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="divide-y divide-gray-100">
+                                                        @forelse ($teams as $team)
+                                                            <tr class="hover:bg-blue-50/50">
+                                                                <th scope="row" class="px-5 py-3 font-semibold text-gray-900">{{ $team->nama_pasukan }}</th>
+                                                                <td class="px-5 py-3 text-center">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        name="team_ids[]"
+                                                                        value="{{ $team->id }}"
+                                                                        x-model="teamIds"
+                                                                        x-bind:disabled="teamIds.length >= 4 && !teamIds.includes('{{ $team->id }}')"
+                                                                        @checked($team->id_kumpulan === $group->id)
+                                                                        aria-label="{{ __('Select :team for :group', ['team' => $team->nama_pasukan, 'group' => $group->nama_kumpulan]) }}"
+                                                                        class="rounded border-gray-300 text-blue-900 shadow-sm focus:ring-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
+                                                                    >
+                                                                </td>
+                                                            </tr>
+                                                        @empty
+                                                            <tr>
+                                                                <td colspan="2" class="px-5 py-8 text-center text-sm text-gray-500">{{ __('No teams are available to assign.') }}</td>
+                                                            </tr>
+                                                        @endforelse
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-5 py-4">
+                                                <p class="text-xs text-gray-500">{{ __('Unselected teams in this group will become unassigned.') }}</p>
+                                                <button type="submit" class="inline-flex min-h-10 items-center rounded-lg bg-blue-900 px-4 text-sm font-bold text-white transition hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2">
+                                                    {{ __('Save :group', ['group' => str_replace('Kumpulan ', '', $group->nama_kumpulan)]) }}
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </section>
+                                @endforeach
+                            </div>
+                        </section>
+                    @endif
+                @endauth
+            @endif
 
             @foreach ($tables as $table)
                 <section id="{{ $table['id'] }}" class="overflow-hidden rounded-2xl border border-white bg-white/95 shadow-lg shadow-blue-950/5">

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Jurulatih;
 use App\Models\Pasukan;
 use App\Models\Pemain;
 use App\Models\SekatanPemain;
@@ -143,6 +144,19 @@ class DashboardTest extends TestCase
             'id_pengurus' => User::factory()->create()->id,
         ]);
         $this->createPlayer($otherTeam, 'Player From Another Team');
+        foreach ([
+            ['Ahmad Firdaus', 45],
+            ['Hafiz Rahman', 39],
+            ['Daniel Zulkifli', 42],
+            ['Rizal Hakim', 41],
+            ['Azmi Khalid', 36],
+        ] as [$name, $age]) {
+            Jurulatih::create([
+                'id_pasukan' => $team->id,
+                'nama' => $name,
+                'umur' => $age,
+            ]);
+        }
 
         $this->get(route('teams.show', $team))
             ->assertOk()
@@ -173,7 +187,7 @@ class DashboardTest extends TestCase
             ->assertDontSee(asset('images/team-placeholder.svg'));
     }
 
-    public function test_player_status_is_blacklist_when_a_sekatan_record_exists(): void
+    public function test_player_status_is_blocked_when_a_sekatan_record_exists(): void
     {
         $team = Pasukan::create([
             'nama_pasukan' => 'KickHub United',
@@ -189,7 +203,7 @@ class DashboardTest extends TestCase
         $this->get(route('teams.show', $team))
             ->assertOk()
             ->assertSee('Blacklisted Player')
-            ->assertSee('Blacklist');
+            ->assertSee('Blocked');
     }
 
     public function test_team_players_are_paginated(): void

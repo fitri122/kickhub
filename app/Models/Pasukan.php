@@ -29,6 +29,11 @@ class Pasukan extends Model
         return $this->hasMany(Pemain::class, 'id_pasukan');
     }
 
+    public function jurulatih(): HasMany
+    {
+        return $this->hasMany(Jurulatih::class, 'id_pasukan');
+    }
+
     // Perlawanan di mana pasukan ini ialah pasukan pertama
     public function perlawananSebagaiPasukan1(): HasMany
     {

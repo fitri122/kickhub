@@ -2,8 +2,12 @@
 
 use App\Http\Controllers\LeagueTableController;
 use App\Http\Controllers\MatchScheduleController;
+use App\Http\Controllers\PlayerSuspensionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatisticsController;
+use App\Http\Controllers\TechnicalOfficialMatchController;
+use App\Http\Controllers\TechnicalOfficialRosterController;
+use App\Http\Controllers\TechnicalOfficialTeamGroupController;
 use App\Models\Pasukan;
 use App\Models\SekatanPemain;
 use Illuminate\Database\Eloquent\Builder;
@@ -25,19 +29,16 @@ Route::get('/teams/{pasukan}', function (Pasukan $pasukan) {
     return view('teams.show', [
         'team' => $pasukan,
         'players' => $pasukan->pemain()
+            ->with('pencapaian')
             ->withCount([
                 'sekatan as sekatan_count' => fn (Builder $query) => $query
                     ->where('jenis_sekatan', SekatanPemain::TYPE_MANUAL),
+                'suspensions as pending_suspensions_count' => fn (Builder $query) => $query
+                    ->where('status', SekatanPemain::STATUS_PENDING),
             ])
             ->orderBy('nama')
             ->paginate(15),
-        'coaches' => [
-            ['nama' => 'Ahmad Firdaus', 'umur' => 45, 'status' => 'Active'],
-            ['nama' => 'Hafiz Rahman', 'umur' => 39, 'status' => 'Active'],
-            ['nama' => 'Daniel Zulkifli', 'umur' => 42, 'status' => 'Active'],
-            ['nama' => 'Rizal Hakim', 'umur' => 41, 'status' => 'Active'],
-            ['nama' => 'Azmi Khalid', 'umur' => 36, 'status' => 'Active'],
-        ],
+        'coaches' => $pasukan->jurulatih()->orderBy('nama')->get(),
     ]);
 })->name('teams.show');
 
@@ -48,6 +49,53 @@ Route::view('/team-manager', 'dashboards.team-manager')
 Route::view('/technical-official', 'dashboards.technical-official')
     ->middleware(['auth', 'verified', 'role:technical_official'])
     ->name('technical-official.dashboard');
+
+Route::middleware(['auth', 'verified', 'role:technical_official'])
+    ->prefix('/technical-official/rosters')
+    ->name('technical-official.rosters.')
+    ->controller(TechnicalOfficialRosterController::class)
+    ->group(function (): void {
+        Route::get('/', 'index')->name('index');
+        Route::get('/player-template', 'playerTemplate')->name('player-template');
+        Route::get('/coach-template', 'coachTemplate')->name('coach-template');
+        Route::get('/teams/{pasukan}', 'show')->name('teams.show');
+        Route::get('/teams/{pasukan}/players/{pemain}/edit', 'editPlayer')->name('players.edit');
+        Route::post('/teams/{pasukan}/players', 'storePlayer')->name('players.store');
+        Route::put('/teams/{pasukan}/players/{pemain}', 'updatePlayer')->name('players.update');
+        Route::post('/teams/{pasukan}/players/import', 'importPlayers')->name('players.import');
+        Route::post('/teams/{pasukan}/coaches', 'storeCoach')->name('coaches.store');
+        Route::post('/teams/{pasukan}/coaches/import', 'importCoaches')->name('coaches.import');
+    });
+
+Route::middleware(['auth', 'verified', 'role:technical_official'])
+    ->prefix('/technical-official/player-suspensions')
+    ->name('technical-official.player-suspensions.')
+    ->controller(PlayerSuspensionController::class)
+    ->group(function (): void {
+        Route::get('/', 'index')->name('index');
+        Route::get('/teams/{pasukan}', 'show')->name('teams.show');
+        Route::post('/{pemain}', 'store')->name('store');
+        Route::delete('/{pemain}', 'destroy')->name('destroy');
+        Route::patch('/coaches/{jurulatih}', 'toggleCoach')->name('coaches.toggle');
+    });
+
+Route::middleware(['auth', 'verified', 'role:technical_official'])
+    ->prefix('/technical-official/matches')
+    ->name('technical-official.matches.')
+    ->controller(TechnicalOfficialMatchController::class)
+    ->group(function (): void {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('/{perlawanan}/edit', 'edit')->name('edit');
+        Route::put('/{perlawanan}', 'update')->name('update');
+        Route::delete('/delete-all', 'destroyAll')->name('destroy-all');
+        Route::delete('/{perlawanan}', 'destroy')->name('destroy');
+    });
+
+Route::patch('/technical-official/league-standings/groups/{kumpulan}/teams', [TechnicalOfficialTeamGroupController::class, 'update'])
+    ->middleware(['auth', 'verified', 'role:technical_official'])
+    ->name('technical-official.league-standings.groups.teams.update');
 
 Route::get('/schedule', [MatchScheduleController::class, 'index'])->name('schedule');
 Route::view('/ai-chat', 'ai-chat')->name('ai-chat');

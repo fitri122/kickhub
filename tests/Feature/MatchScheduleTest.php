@@ -58,6 +58,58 @@ class MatchScheduleTest extends TestCase
             ->assertSee('BR');
     }
 
+    public function test_default_match_numbers_start_at_one_and_close_gaps_after_deletion(): void
+    {
+        $manager = User::factory()->create();
+        $group = Kumpulan::create(['nama_kumpulan' => 'Kumpulan A']);
+        $alpha = $this->createTeam('KV Alpha', $group, $manager);
+        $bravo = $this->createTeam('KV Bravo', $group, $manager);
+        $firstMatch = $this->createMatch($group, $alpha, $bravo, '2026-11-13');
+        $deletedMatch = $this->createMatch($group, $alpha, $bravo, '2026-11-14');
+        $lastMatch = $this->createMatch($group, $alpha, $bravo, '2026-11-15');
+
+        $deletedMatch->delete();
+
+        $this->assertSame(2, $lastMatch->displayNumber());
+        $this->get(route('schedule'))
+            ->assertOk()
+            ->assertSeeInOrder(['Match #1', 'Match #2'])
+            ->assertDontSee('Match #3');
+        $this->get(route('matches.show', $lastMatch))
+            ->assertOk()
+            ->assertSee('Match #2');
+
+        $newMatch = $this->createMatch($group, $alpha, $bravo, '2026-11-16');
+
+        $this->get(route('schedule'))
+            ->assertOk()
+            ->assertSeeInOrder(['Match #1', 'Match #2', 'Match #3']);
+        $this->assertModelExists($firstMatch);
+        $this->assertModelExists($newMatch);
+    }
+
+    public function test_schedule_shows_match_management_link_only_to_technical_officials(): void
+    {
+        $this->get(route('schedule'))
+            ->assertOk()
+            ->assertDontSee(route('technical-official.matches.index'), false);
+
+        $teamManager = User::factory()->create(['role' => User::ROLE_TEAM_MANAGER]);
+
+        $this->actingAs($teamManager)
+            ->get(route('schedule'))
+            ->assertOk()
+            ->assertDontSee(route('technical-official.matches.index'), false);
+
+        $technicalOfficial = User::factory()->create(['role' => User::ROLE_TECHNICAL_OFFICIAL]);
+
+        $this->actingAs($technicalOfficial)
+            ->get(route('schedule'))
+            ->assertOk()
+            ->assertSee('Manage Matches')
+            ->assertSee(route('technical-official.matches.index'), false);
+    }
+
     public function test_match_details_show_recorded_scores_scorers_and_events_in_chronological_order(): void
     {
         $manager = User::factory()->create();

@@ -8,14 +8,27 @@
                     <h1 id="schedule-heading" class="mt-3 text-3xl font-black tracking-tight sm:text-4xl">{{ __('Schedule') }}</h1>
                     <p class="mt-2 max-w-xl text-sm leading-6 text-blue-100 sm:text-base">{{ __('Every fixture, one place. Pick a match day and follow the tournament action.') }}</p>
                 </div>
-                <div class="grid grid-cols-2 gap-3 sm:min-w-64">
-                    <div class="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur">
-                        <p class="text-xs font-semibold text-blue-100">{{ __('Fixtures') }}</p>
-                        <p class="mt-1 text-2xl font-black">{{ number_format($matches->count()) }}</p>
-                    </div>
-                    <div class="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur">
-                        <p class="text-xs font-semibold text-blue-100">{{ __('Match days') }}</p>
-                        <p class="mt-1 text-2xl font-black">{{ count($dayCounts) }}</p>
+                <div class="flex flex-col gap-3 sm:min-w-64">
+                    @auth
+                        @if (Auth::user()->role === \App\Models\User::ROLE_TECHNICAL_OFFICIAL)
+                            <a
+                                href="{{ route('technical-official.matches.index') }}"
+                                class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-amber-400 px-5 py-2.5 text-sm font-extrabold text-[#111b48] transition hover:bg-amber-300 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#172b67]"
+                            >
+                                {{ __('Manage Matches') }}
+                                <span aria-hidden="true">&rarr;</span>
+                            </a>
+                        @endif
+                    @endauth
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur">
+                            <p class="text-xs font-semibold text-blue-100">{{ __('Fixtures') }}</p>
+                            <p class="mt-1 text-2xl font-black">{{ number_format($matches->count()) }}</p>
+                        </div>
+                        <div class="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur">
+                            <p class="text-xs font-semibold text-blue-100">{{ __('Match days') }}</p>
+                            <p class="mt-1 text-2xl font-black">{{ count($dayCounts) }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -51,7 +64,7 @@
                         >
                             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-4 py-4 sm:px-6">
                                 <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-                                    <span class="font-bold text-gray-900">{{ __('Match #:number', ['number' => $match->id]) }}</span>
+                                    <span class="font-bold text-gray-900">{{ $match->displayLabel($loop->iteration) }}</span>
                                     <span class="text-gray-300" aria-hidden="true">|</span>
                                     <span class="font-medium text-gray-600">{{ $match->tarikh->format('D, d M Y') }}</span>
                                     <span class="font-medium text-gray-600">{{ $match->display_time }}</span>

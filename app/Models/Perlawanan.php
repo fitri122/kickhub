@@ -5,12 +5,14 @@ namespace App\Models;
 use App\Observers\PerlawananObserver;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[ObservedBy([PerlawananObserver::class])]
 #[Fillable([
+    'match_label',
     'id_kumpulan',
     'id_pasukan_1',
     'id_pasukan_2',
@@ -23,6 +25,33 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Perlawanan extends Model
 {
     protected $table = 'perlawanan';
+
+    public function displayLabel(?int $number = null): string
+    {
+        return filled($this->match_label)
+            ? $this->match_label
+            : __('Match #:number', ['number' => $number ?? $this->displayNumber()]);
+    }
+
+    public function displayNumber(): int
+    {
+        $date = $this->tarikh->toDateString();
+
+        return static::query()
+            ->where(function (Builder $query) use ($date): void {
+                $query->whereDate('tarikh', '<', $date)
+                    ->orWhere(function (Builder $query) use ($date): void {
+                        $query->whereDate('tarikh', $date)
+                            ->where('masa', '<', $this->masa);
+                    })
+                    ->orWhere(function (Builder $query) use ($date): void {
+                        $query->whereDate('tarikh', $date)
+                            ->where('masa', $this->masa)
+                            ->where('id', '<=', $this->id);
+                    });
+            })
+            ->count();
+    }
 
     protected function casts(): array
     {

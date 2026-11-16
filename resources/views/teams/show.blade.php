@@ -1,8 +1,4 @@
 <x-app-layout>
-    @php
-        $samplePositions = ['Center Back', 'Left Back', 'Right Wing', 'Midfield', 'Striker'];
-    @endphp
-
     <div
         x-data="{ activeTab: 'players', selectedPlayer: null, selectedCoach: null }"
         x-on:open-player-details="selectedPlayer = $event.detail; $dispatch('open-modal', 'player-details')"
@@ -73,7 +69,6 @@
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     @forelse ($players as $player)
                         @php
-                            $position = $samplePositions[array_rand($samplePositions)];
                             $initials = collect(explode(' ', trim($player->nama)))
                                 ->filter()
                                 ->take(2)
@@ -92,7 +87,7 @@
                                 <div class="min-w-0 flex-1">
                                     <div class="flex flex-wrap items-start justify-between gap-2">
                                         <h3 class="break-words font-bold text-gray-900">{{ $player->nama }}</h3>
-                                        <span class="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-800">{{ $position }}</span>
+                                        <span class="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-800">{{ $player->position ?: '—' }}</span>
                                     </div>
                                     <p class="mt-1 text-sm text-gray-500">
                                         #{{ $player->no_jersi }} <span class="px-1 text-gray-300">•</span> {{ $player->umur ?? '—' }} {{ __('years old') }}
@@ -102,7 +97,9 @@
 
                             <div class="mt-5 flex items-center justify-between gap-3 border-t border-gray-100 pt-4">
                                 @if ($player->sekatan_count > 0)
-                                    <span class="inline-flex rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-800">{{ __('Blacklist') }}</span>
+                                    <span class="inline-flex rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-800">{{ __('Blocked') }}</span>
+                                @elseif ($player->pending_suspensions_count > 0)
+                                    <span class="inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800">{{ __('Automatic suspension') }}</span>
                                 @else
                                     <span class="inline-flex rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-800">{{ __('Active') }}</span>
                                 @endif
@@ -112,9 +109,10 @@
                                     data-player-age="{{ $player->umur ?? '' }}"
                                     data-player-role="{{ $player->role_pemain }}"
                                     data-player-image="{{ $player->gambar ? asset($player->gambar) : '' }}"
-                                    data-player-position="{{ $position }}"
+                                    data-player-position="{{ $player->position }}"
                                     data-player-initials="{{ $initials }}"
-                                    x-on:click="$dispatch('open-player-details', { name: $el.dataset.playerName, age: $el.dataset.playerAge, role: $el.dataset.playerRole, image: $el.dataset.playerImage || null, position: $el.dataset.playerPosition, initials: $el.dataset.playerInitials })"
+                                    data-player-achievements="{{ $player->pencapaian->map(fn ($achievement) => ['name' => $achievement->nama_pencapaian, 'year' => $achievement->tahun, 'level' => $achievement->peringkat])->values()->toJson() }}"
+                                    x-on:click="$dispatch('open-player-details', { name: $el.dataset.playerName, age: $el.dataset.playerAge, role: $el.dataset.playerRole, image: $el.dataset.playerImage || null, position: $el.dataset.playerPosition, initials: $el.dataset.playerInitials, achievements: JSON.parse($el.dataset.playerAchievements) })"
                                     class="rounded-lg bg-blue-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2"
                                     aria-label="{{ __('View :player', ['player' => $player->nama]) }}"
                                 >
@@ -150,7 +148,7 @@
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     @forelse ($coaches as $coach)
                         @php
-                            $initials = collect(explode(' ', trim($coach['nama'])))
+                            $initials = collect(explode(' ', trim($coach->nama)))
                                 ->filter()
                                 ->take(2)
                                 ->map(fn ($part) => substr($part, 0, 1))
@@ -160,27 +158,27 @@
                             <div class="flex items-start gap-4">
                                 <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-sm font-extrabold text-amber-800">{{ $initials }}</div>
                                 <div class="min-w-0 flex-1">
-                                    <h3 class="break-words font-bold text-gray-900">{{ $coach['nama'] }}</h3>
-                                    <p class="mt-1 text-sm text-gray-500">{{ $coach['umur'] }} {{ __('years old') }}</p>
+                                    <h3 class="break-words font-bold text-gray-900">{{ $coach->nama }}</h3>
+                                    <p class="mt-1 text-sm text-gray-500">{{ $coach->umur }} {{ __('years old') }}</p>
                                 </div>
                             </div>
 
                             <div class="mt-5 flex items-center justify-between gap-3 border-t border-gray-100 pt-4">
                                 <span @class([
                                     'inline-flex rounded-full px-2.5 py-1 text-xs font-semibold',
-                                    'bg-green-100 text-green-800' => $coach['status'] === 'Active',
-                                    'bg-gray-100 text-gray-700' => $coach['status'] !== 'Active',
+                                    'bg-green-100 text-green-800' => ! $coach->is_blocked,
+                                    'bg-red-100 text-red-800' => $coach->is_blocked,
                                 ])>
-                                    {{ __($coach['status']) }}
+                                    {{ $coach->is_blocked ? __('Blocked') : __('Active') }}
                                 </span>
                                 <button
                                     type="button"
-                                    data-coach-name="{{ $coach['nama'] }}"
-                                    data-coach-age="{{ $coach['umur'] }}"
+                                    data-coach-name="{{ $coach->nama }}"
+                                    data-coach-age="{{ $coach->umur }}"
                                     data-coach-initials="{{ $initials }}"
                                     x-on:click="$dispatch('open-coach-details', { name: $el.dataset.coachName, age: $el.dataset.coachAge, initials: $el.dataset.coachInitials })"
                                     class="rounded-lg bg-blue-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2"
-                                    aria-label="{{ __('View :coach', ['coach' => $coach['nama']]) }}"
+                                    aria-label="{{ __('View :coach', ['coach' => $coach->nama]) }}"
                                 >
                                     {{ __('View') }}
                                 </button>
@@ -236,7 +234,15 @@
                 </section>
                 <section class="rounded-xl border border-gray-200 p-4 sm:p-5">
                     <h3 class="text-sm font-semibold text-gray-900">{{ __('Achievements') }}</h3>
-                    <div class="mt-3 min-h-8"></div>
+                    <ul class="mt-3 space-y-2">
+                        <template x-for="(achievement, index) in selectedPlayer ? selectedPlayer.achievements : []" x-bind:key="index">
+                            <li class="rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-700">
+                                <span class="font-semibold" x-text="achievement.name"></span>
+                                <span class="text-gray-500" x-text="' · ' + achievement.year + ' · ' + achievement.level"></span>
+                            </li>
+                        </template>
+                    </ul>
+                    <p x-show="selectedPlayer && selectedPlayer.achievements.length === 0" class="mt-3 text-sm text-gray-500">{{ __('No achievements recorded.') }}</p>
                 </section>
             </div>
 
@@ -270,13 +276,6 @@
                     </div>
                     <p class="mt-1 text-sm text-gray-600">{{ __('Coach') }}</p>
                 </div>
-            </div>
-
-            <div class="mt-8">
-                <section class="rounded-xl border border-gray-200 p-4 sm:p-5">
-                    <h3 class="text-sm font-semibold text-gray-900">{{ __('Achievements') }}</h3>
-                    <div class="mt-3 min-h-8"></div>
-                </section>
             </div>
 
             <div class="mt-7 flex justify-end border-t border-gray-100 pt-5">

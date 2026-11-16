@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kumpulan;
-use App\Models\Perlawanan;
 use App\Models\Pasukan;
+use App\Models\Perlawanan;
 use App\Models\RekodDisiplin;
 use Illuminate\View\View;
 
@@ -105,6 +105,7 @@ class LeagueTableController extends Controller
                     ?: ($right['goal_difference'] <=> $left['goal_difference'])
                     ?: ($right['goals_for'] <=> $left['goals_for'])
                     ?: ($right['wins'] <=> $left['wins'])
+                    ?: (($left['yellow_cards'] + $left['red_cards']) <=> ($right['yellow_cards'] + $right['red_cards']))
                     ?: strcasecmp($left['team_name'], $right['team_name']);
             });
 
@@ -147,6 +148,12 @@ class LeagueTableController extends Controller
         return view('league-table', [
             'activePage' => $page,
             'hasGroupColumn' => $page === 'overall',
+            'teams' => $teams,
+            'groups' => $groups,
+            'assignedTeamIdsByGroup' => $teams
+                ->groupBy('id_kumpulan')
+                ->map(fn ($groupTeams) => $groupTeams->pluck('id')->map(fn (int $id): string => (string) $id)->values())
+                ->all(),
             'tables' => $page === 'overall' ? [$overallTable] : $groupTables,
         ]);
     }
